@@ -8,6 +8,7 @@ import localStrategy from 'passport-local';
 import session from 'express-session';
 import { error } from 'node:console';
 import user from './models/user.js';
+import meeting from "./models/meeting.js";
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
