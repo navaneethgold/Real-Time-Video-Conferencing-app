@@ -73,6 +73,14 @@ app.post("/signup",async(req,res)=>{
 })
 
 
+app.get("/check-Auth",(req,res)=>{
+    if(req.isAuthenticated()){
+        res.json({isAuthenticated:true,user:req.user})
+    }else{
+        res.json({isAuthenticated:false});
+    }
+})
+
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
 })
