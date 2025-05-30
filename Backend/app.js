@@ -21,7 +21,7 @@ const sessionOptions={
     },
 };
 const allowedOrigins=[
-    "https://localhost:5173"
+    "http://localhost:5173"
 ];
 app.use(cors({
     origin: (origin, callback) => {
@@ -52,6 +52,26 @@ main().then(()=>{
 async function main(){
     await mongoose.connect(dburl);
 }
+
+
+app.post("/signup",async(req,res)=>{
+    let{username,password}=req.body;
+    const usern=await user.findOne({username:username});
+    let new_user="";
+    if(usern){
+        return res.status(400).send("username already exists");
+    }else{
+        new_user=new user({username:username});
+    }
+    const registered_user=await user.register(new_user,password);
+    req.login(registered_user,(err)=>{
+        if(err){
+            return next(err);
+        }
+        res.json(new_user);
+    });
+})
+
 
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
