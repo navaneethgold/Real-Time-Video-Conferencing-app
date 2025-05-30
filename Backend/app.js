@@ -6,10 +6,51 @@ import cors from 'cors';
 import passport from 'passport';
 import localStrategy from 'passport-local';
 import session from 'express-session';
-import cors from 'cors';
+import { error } from 'node:console';
+import user from './models/user.js';
 const app=express();
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+const sessionOptions={
+    secret: "navaneeth1729",
+    resave:false,
+    saveUninitialized:false,
+    cookie:{
+        maxAge:7*24*60*60*1000,
+    },
+};
+const allowedOrigins=[
+    "https://localhost:5173"
+];
+app.use(cors({
+    origin: (origin, callback) => {
+    console.log("CORS request from:", origin);
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}))
+app.use(session(sessionOptions));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new localStrategy(user.authenticate()));
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
+
+const dburl='mongodb+srv://navaneethabs2006:V9s22ZUtesUBf7xi@cluster0.wj001x8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+
+main().then(()=>{
+    console.log("Connected-Successfully");
+}).catch((error)=>{
+    console.log("Not-Connected");
+    console.log(error);
+})
+async function main(){
+    await mongoose.connect(dburl);
+}
 
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
