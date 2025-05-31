@@ -81,6 +81,17 @@ app.get("/check-Auth",(req,res)=>{
     }
 })
 
+app.post("/login",passport.authenticate("local",{failureRedirect:"/login"}),async(req,res)=>{
+    try{
+        if(req.isAuthenticated()){
+            res.json(req.user);
+        }
+    }catch (error) {
+        console.log("error logging in:",error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+})
+
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
 })
