@@ -4,37 +4,30 @@ import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
 const Chatting=({roomId})=>{
-    const [userData2,setuserData2]=useState({});
-    const [isLogged2,setisLogged2]=useState(null);
     const navigate=useNavigate();
     const [message,setMessage]=useState('');
-    const [targetUser2,settargetUser2]=useState('');
     const socketRef2 = useRef(null);
-    useEffect(()=>{
-        const checkAuth=async()=>{
-            try{
-                const res=await axios.get("http://localhost:8000/check-Auth", { withCredentials: true });
-                if(res.data.isAuthenticated){
-                    setisLogged2(true);
-                    setuserData2(res.data.user);
-                }else{
-                    setisLogged2(false);
-                    navigate("/login");
-                }
-            }catch(err){
-                console.error("Auth check failed", err);    
-                setisLogged2(false);
-                navigate("/login");
-            }
-            
-        }
-        checkAuth();
-    },[]);
-    
+    const [userData, setUserData] = useState({});
 
-    const handleChangeUser=(e)=>{
-        settargetUser2(e.target.value);
-    }
+
+    useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/check-Auth", {
+          withCredentials: true,
+        });
+        if (res.data.isAuthenticated) {
+          setUserData(res.data.user);
+        } else {
+          navigate("/login");
+        }
+      } catch (err) {
+        console.error("Auth check failed", err);
+        navigate("/login");
+      }
+    };
+    checkAuth();
+  }, []);
 
     const handleChangeMessage=(e)=>{
         setMessage(e.target.value);
@@ -54,9 +47,9 @@ const Chatting=({roomId})=>{
       }
     }
     useEffect(() => {
-      if (isLogged2 && userData2._id && !socketRef2.current) {
+      if (!socketRef2.current) {
         socketRef2.current = io("http://localhost:8000", {
-          auth: { userId: userData2._id },
+          auth:{userId:userData._id},
           withCredentials: true
         });
     
@@ -73,7 +66,7 @@ const Chatting=({roomId})=>{
           socketRef2.current = null;
         }
       };
-    }, [isLogged2, userData2._id]);
+    }, []);
 
 
 
@@ -82,7 +75,7 @@ const Chatting=({roomId})=>{
         <>
             <form onSubmit={handleSubmit}>
                 <div className="messageBox">
-                    <input type="text" value={targetUser2} onChange={handleChangeUser} required/>
+                    <input type="text" required/>
                     <input type="text" value={message} onChange={handleChangeMessage} required/>
                 </div>
                 <button type="submit">Send</button>

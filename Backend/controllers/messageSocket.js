@@ -24,6 +24,7 @@ const Messaging=(server)=>{
       
       socket.on("join-room", ({ roomId }) => {
         socket.join(roomId);
+        console.log(`User ${socket.userId} joined room ${roomId}`);
         socket.to(roomId).emit("user-joined");
       });
     //   socket.on("join-room-2", ({ roomId }) => {
