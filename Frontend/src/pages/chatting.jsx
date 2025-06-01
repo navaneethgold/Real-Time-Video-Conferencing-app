@@ -3,27 +3,27 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 
-const Chatting=()=>{
-    const [userData,setuserData]=useState({});
-    const [isLogged,setisLogged]=useState(null);
+const Chatting=({roomId})=>{
+    const [userData2,setuserData2]=useState({});
+    const [isLogged2,setisLogged2]=useState(null);
     const navigate=useNavigate();
     const [message,setMessage]=useState('');
-    const [targetUser,setTargetUser]=useState('');
-    const socketRef = useRef(null);
+    const [targetUser2,settargetUser2]=useState('');
+    const socketRef2 = useRef(null);
     useEffect(()=>{
         const checkAuth=async()=>{
             try{
                 const res=await axios.get("http://localhost:8000/check-Auth", { withCredentials: true });
                 if(res.data.isAuthenticated){
-                    setisLogged(true);
-                    setuserData(res.data.user);
+                    setisLogged2(true);
+                    setuserData2(res.data.user);
                 }else{
-                    setisLogged(false);
+                    setisLogged2(false);
                     navigate("/login");
                 }
             }catch(err){
                 console.error("Auth check failed", err);    
-                setisLogged(false);
+                setisLogged2(false);
                 navigate("/login");
             }
             
@@ -33,7 +33,7 @@ const Chatting=()=>{
     
 
     const handleChangeUser=(e)=>{
-        setTargetUser(e.target.value);
+        settargetUser2(e.target.value);
     }
 
     const handleChangeMessage=(e)=>{
@@ -46,38 +46,34 @@ const Chatting=()=>{
 
       try {
         console.log("submit clicked");
-        const res = await axios.get(`http://localhost:8000/getID/${targetUser}`);
-        if(res.data.exist){
-            const tuserId = res.data.tarUser;
-            socketRef.current.emit("private-message", { to: tuserId, message });
-            setMessage(""); // clear input
-        }else{
-            alert("user doesn't exist");
-        }
+        socketRef2.current.emit("private-message", { roomId, message });
+        setMessage(""); // clear input
         
       } catch (err) {
         console.error("Failed to send message", err);
       }
     }
     useEffect(() => {
-      if (isLogged && userData._id && !socketRef.current) {
-        socketRef.current = io("http://localhost:8000", {
-          auth: { userId: userData._id },
+      if (isLogged2 && userData2._id && !socketRef2.current) {
+        socketRef2.current = io("http://localhost:8000", {
+          auth: { userId: userData2._id },
           withCredentials: true
         });
     
-        socketRef.current.on("private-message", ({ from, message }) => {
-          console.log("Message from", from, ":", message);
+        socketRef2.current.emit("join-room", {roomId});
+
+        socketRef2.current.on("private-message", ({ roomId, message }) => {
+          console.log("Message from", roomId, ":", message);
         });
-      }
+      } 
     
       return () => {
-        if (socketRef.current) {
-          socketRef.current.disconnect();
-          socketRef.current = null;
+        if (socketRef2.current) {
+          socketRef2.current.disconnect();
+          socketRef2.current = null;
         }
       };
-    }, [isLogged, userData._id]);
+    }, [isLogged2, userData2._id]);
 
 
 
@@ -86,7 +82,7 @@ const Chatting=()=>{
         <>
             <form onSubmit={handleSubmit}>
                 <div className="messageBox">
-                    <input type="text" value={targetUser} onChange={handleChangeUser} required/>
+                    <input type="text" value={targetUser2} onChange={handleChangeUser} required/>
                     <input type="text" value={message} onChange={handleChangeMessage} required/>
                 </div>
                 <button type="submit">Send</button>

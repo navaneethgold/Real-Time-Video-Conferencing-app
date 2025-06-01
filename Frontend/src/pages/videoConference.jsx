@@ -2,20 +2,19 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import Chatting from "./chatting";
 
 const MeetVideo = () => {
   const peerConnection = useRef(null);
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const socketRef = useRef(null);
-  const targetUserIdRef = useRef(null);
-  const [targetUser, setTargetUser] = useState("");
-  const [message, setMessage] = useState("");
+  const [roomId, setRoomId] = useState("");
   const [userData, setUserData] = useState({});
   const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
+  const [inCall, setInCall] = useState(false);
 
-  // Step 1: Check Auth and then setup
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -36,22 +35,18 @@ const MeetVideo = () => {
     checkAuth();
   }, []);
 
-  // Step 2: Setup socket and peer connection after refs + user are ready
   useEffect(() => {
     if (!isReady || !userData._id || !localVideoRef.current) return;
 
-    // Initialize socket
     socketRef.current = io("http://localhost:8000", {
       auth: { userId: userData._id },
       withCredentials: true,
     });
 
-    // Initialize peer connection
     peerConnection.current = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
-    // Stream local video
     const startMedia = async () => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
@@ -69,35 +64,42 @@ const MeetVideo = () => {
 
     startMedia();
 
-    // Handle incoming call
-    socketRef.current.on("call-user", async ({ from, offer }) => {
+    socketRef.current.on("user-joined", async () => {
+      const offer = await peerConnection.current.createOffer();
+      await peerConnection.current.setLocalDescription(offer);
+      socketRef.current.emit("call-user", { roomId, offer });
+      setInCall(true);
+    });
+
+    socketRef.current.on("call-user", async ({ offer }) => {
       await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
       const answer = await peerConnection.current.createAnswer();
       await peerConnection.current.setLocalDescription(answer);
-      socketRef.current.emit("call-accepted", { to: from, answer });
+      socketRef.current.emit("call-accepted", { roomId, answer });
+      setInCall(true);
     });
 
-    // Handle answer
     socketRef.current.on("call-accepted", async ({ answer }) => {
       await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
     });
 
-    // Handle ICE candidate from other peer
     socketRef.current.on("ice-candidate", ({ candidate }) => {
       peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
     });
 
-    // Send ICE candidate
+    socketRef.current.on("end-call", () => {
+      endCallForMe();
+    });
+
     peerConnection.current.onicecandidate = (event) => {
-      if (event.candidate && targetUserIdRef.current) {
+      if (event.candidate) {
         socketRef.current.emit("ice-candidate", {
-          to: targetUserIdRef.current,
+          roomId,
           candidate: event.candidate,
         });
       }
     };
 
-    // Set remote video
     peerConnection.current.ontrack = (event) => {
       if (remoteVideoRef.current) {
         remoteVideoRef.current.srcObject = event.streams[0];
@@ -107,40 +109,73 @@ const MeetVideo = () => {
     return () => {
       socketRef.current?.disconnect();
     };
-  }, [isReady, userData._id]);
+  }, [isReady, userData._id, roomId]);
 
-  const createOffer = async (targetUserId) => {
-    const offer = await peerConnection.current.createOffer();
-    await peerConnection.current.setLocalDescription(offer);
-    socketRef.current.emit("call-user", { to: targetUserId, offer });
+  const handleJoinRoom = (e) => {
+    e.preventDefault();
+    if (!roomId.trim()) return alert("Enter a room ID");
+    socketRef.current.emit("join-room", { roomId });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.get(`http://localhost:8000/getID/${targetUser}`);
-      if (res.data.exist) {
-        targetUserIdRef.current = res.data.tarUser;
-        createOffer(targetUserIdRef.current);
-      } else {
-        alert("User doesn't exist");
-      }
-    } catch (err) {
-      console.error("Error fetching target user ID", err);
+  const endCall = () => {
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
     }
+
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      localVideoRef.current.srcObject = null;
+    }
+
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    socketRef.current.emit("end-call", { roomId });
+    setInCall(false);
+  };
+
+  const endCallForMe = () => {
+    if (peerConnection.current) {
+      peerConnection.current.close();
+      peerConnection.current = null;
+    }
+
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      localVideoRef.current.srcObject = null;
+    }
+
+    if (remoteVideoRef.current) {
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    setInCall(false);
   };
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <div className="messageBox">
-          <input type="text" value={targetUser} onChange={(e) => setTargetUser(e.target.value)} required />
-          <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} required />
-        </div>
-        <button type="submit">Send</button>
+      <form onSubmit={handleJoinRoom}>
+        <input
+          type="text"
+          placeholder="Enter Room ID"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value)}
+          required
+        />
+        <button type="submit">Join Room</button>
       </form>
+
       <video ref={localVideoRef} autoPlay playsInline muted style={{ width: "300px" }} />
       <video ref={remoteVideoRef} autoPlay playsInline style={{ width: "300px" }} />
+
+      {inCall && (
+        <button onClick={endCall} style={{ background: "red", color: "white" }}>
+          End Call
+        </button>
+      )}
+      <Chatting  roomId={roomId}/>
     </>
   );
 };
