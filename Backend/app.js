@@ -9,7 +9,11 @@ import session from 'express-session';
 import { error } from 'node:console';
 import user from './models/user.js';
 import meeting from "./models/meeting.js";
+import msg from "./models/message.js";
+import Messaging from './controllers/messageSocket.js';
 const app=express();
+const server=createServer(app);
+Messaging(server);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 const sessionOptions={
@@ -92,9 +96,21 @@ app.post("/login",passport.authenticate("local",{failureRedirect:"/login"}),asyn
     }
 })
 
+app.get("/getID/:username",async(req,res)=>{
+    const {username}=req.params;
+    console.log("here");
+    try{
+        const tuser=await user.findOne({username:username});
+        res.json({tarUser:tuser._id});
+    }catch(error){
+        console.log("Error: ",error);
+    }
+})
+
+
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
 })
-app.listen("8000",()=>{
+server.listen("8000",()=>{
     console.log("server is running on port 8000");
 })
