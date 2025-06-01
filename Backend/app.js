@@ -101,7 +101,10 @@ app.get("/getID/:username",async(req,res)=>{
     console.log("here");
     try{
         const tuser=await user.findOne({username:username});
-        res.json({tarUser:tuser._id});
+        if (!tuser) {
+            return res.json({ error: "User does not exist",exist:false });
+        }
+        res.json({tarUser:tuser._id,exist:true});
     }catch(error){
         console.log("Error: ",error);
     }

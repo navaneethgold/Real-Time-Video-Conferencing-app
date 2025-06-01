@@ -47,9 +47,14 @@ const Chatting=()=>{
       try {
         console.log("submit clicked");
         const res = await axios.get(`http://localhost:8000/getID/${targetUser}`);
-        const tuserId = res.data.tarUser;
-        socketRef.current.emit("private-message", { to: tuserId, message });
-        setMessage(""); // clear input
+        if(res.data.exist){
+            const tuserId = res.data.tarUser;
+            socketRef.current.emit("private-message", { to: tuserId, message });
+            setMessage(""); // clear input
+        }else{
+            alert("user doesn't exist");
+        }
+        
       } catch (err) {
         console.error("Failed to send message", err);
       }

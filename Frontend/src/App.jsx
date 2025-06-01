@@ -7,6 +7,7 @@ import Signup from './pages/signup';
 import Home from './pages/home';
 import Login from './pages/login';
 import Chatting from './pages/chatting';
+import MeetVideo from './pages/videoConference';
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +16,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path='/login' element={<Login/>}/>
           <Route path='/chatting' element={<Chatting/>}/>
+          <Route path='/videoConference' element={<MeetVideo/>}/>
       </Routes>
     </BrowserRouter>
   )
