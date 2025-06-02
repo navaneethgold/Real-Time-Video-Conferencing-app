@@ -11,6 +11,7 @@ const Messaging=(server)=>{
     });
     io.use((socket, next) => {
       const userId = socket.handshake.auth.userId;
+      console.log(userId);
       if (!userId) return next(new Error('Unauthorized'));
       socket.userId = userId;
       next();
@@ -27,9 +28,10 @@ const Messaging=(server)=>{
         console.log(`User ${socket.userId} joined room ${roomId}`);
         socket.to(roomId).emit("user-joined");
       });
-    //   socket.on("join-room-2", ({ roomId }) => {
-    //     socket.join(roomId);
-    //   });
+      socket.on("join-room-2", ({ roomId }) => {
+        console.log(`User ${socket.userId} joined room 2 ${roomId}`);
+        socket.join(roomId);
+      });
       
       socket.on("private-message", async ({ roomId, message }) => {
         // const receiverSocketId = onlineUsers.get(to);

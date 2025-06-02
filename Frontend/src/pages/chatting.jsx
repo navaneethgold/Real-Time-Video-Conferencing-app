@@ -36,6 +36,10 @@ const Chatting=({roomId})=>{
     const handleSubmit=async(e)=>{
         e.preventDefault(); // important
         console.log("submit clicked");
+        if (!socketRef2.current) {
+          console.error("Socket is not connected yet.");
+          return;
+        }
 
       try {
         console.log("submit clicked");
@@ -47,13 +51,13 @@ const Chatting=({roomId})=>{
       }
     }
     useEffect(() => {
-      if (!socketRef2.current) {
+      if (userData._id && !socketRef2.current && roomId) {
         socketRef2.current = io("http://localhost:8000", {
           auth:{userId:userData._id},
           withCredentials: true
         });
     
-        socketRef2.current.emit("join-room", {roomId});
+        socketRef2.current.emit("join-room-2", {roomId});
 
         socketRef2.current.on("private-message", ({ roomId, message }) => {
           console.log("Message from", roomId, ":", message);
@@ -66,7 +70,7 @@ const Chatting=({roomId})=>{
           socketRef2.current = null;
         }
       };
-    }, []);
+    }, [userData._id,roomId]);
 
 
 
@@ -75,7 +79,6 @@ const Chatting=({roomId})=>{
         <>
             <form onSubmit={handleSubmit}>
                 <div className="messageBox">
-                    <input type="text" required/>
                     <input type="text" value={message} onChange={handleChangeMessage} required/>
                 </div>
                 <button type="submit">Send</button>
