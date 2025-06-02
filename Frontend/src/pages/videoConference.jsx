@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import "../Styles/videoConference.css";
+import MicRoundedIcon from '@mui/icons-material/MicRounded';
 import Chatting from "./chatting";
+import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
+import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
+import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
+
 
 const MeetVideo = () => {
   const peerConnection = useRef(null);
@@ -13,7 +19,12 @@ const MeetVideo = () => {
   const [userData, setUserData] = useState({});
   const [isReady, setIsReady] = useState(false);
   const navigate = useNavigate();
+  const [isRemoteVideoOff, setIsRemoteVideoOff] = useState(false);
   const [inCall, setInCall] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const [videoOff, setVideoOff] = useState(false);
+  const localStreamRef = useRef(null);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -57,6 +68,7 @@ const MeetVideo = () => {
         stream.getTracks().forEach((track) =>
           peerConnection.current.addTrack(track, stream)
         );
+        localStreamRef.current =stream;
       } catch (err) {
         console.error("Media error:", err);
       }
@@ -90,6 +102,9 @@ const MeetVideo = () => {
     socketRef.current.on("end-call", () => {
       endCallForMe();
     });
+    socketRef.current.on("videoOff",({roomId,videoOff})=>{
+      setIsRemoteVideoOff(!videoOff);
+    })
 
     peerConnection.current.onicecandidate = (event) => {
       if (event.candidate) {
@@ -101,10 +116,21 @@ const MeetVideo = () => {
     };
 
     peerConnection.current.ontrack = (event) => {
+      const stream = event.streams[0];
       if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = event.streams[0];
+        remoteVideoRef.current.srcObject = stream;
+      
+        const [remoteVideoTrack] = stream.getVideoTracks();
+        // if (remoteVideoTrack) {
+        //   // Listen for enabled/disabled change
+        //   remoteVideoTrack.onmute = () => setIsRemoteVideoOff(true);
+        //   remoteVideoTrack.onunmute = () => setIsRemoteVideoOff(false);
+        //   // Initial state
+        //   // setIsRemoteVideoOff(!remoteVideoTrack.enabled);
+        // }
       }
     };
+
 
     return () => {
       socketRef.current?.disconnect();
@@ -153,29 +179,52 @@ const MeetVideo = () => {
 
     setInCall(false);
   };
+  const toggleMute = () => {
+    const audioTrack = localStreamRef.current?.getAudioTracks()[0];
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled;
+      setIsMuted(!audioTrack.enabled);
+    }
+  };
+
+  const toggleVideo = () => {
+    const videoTrack = localStreamRef.current?.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled;
+      setVideoOff(!videoTrack.enabled);
+      socketRef.current.emit("videoOff",{roomId,videoOff});
+    }
+  };
+
 
   return (
     <>
-      <form onSubmit={handleJoinRoom}>
-        <input
-          type="text"
-          placeholder="Enter Room ID"
-          value={roomId}
-          onChange={(e) => setRoomId(e.target.value)}
-          required
-        />
-        <button type="submit">Join Room</button>
-      </form>
+    <div className="lobby">
+        <form onSubmit={handleJoinRoom}>
+          <input type="text" placeholder="Enter Room ID" value={roomId} onChange={(e) => setRoomId(e.target.value)} required />
+          <button type="submit">Join Room</button>
+        </form>
+        {videoOff && <div className="video-overlay">Video Off</div>}
+        <video ref={localVideoRef} autoPlay playsInline muted id="local"/>
+        {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
+        <video ref={remoteVideoRef} autoPlay playsInline id="remote"/>
+        {/* {inCall && (
+          <button onClick={endCall} style={{ background: "red", color: "white" }}>
+            End Call
+          </button>
+        )} */}
+        <div className="buttons">
+          <Chatting roomId={roomId} />
 
-      <video ref={localVideoRef} autoPlay playsInline muted style={{ width: "300px" }} />
-      <video ref={remoteVideoRef} autoPlay playsInline style={{ width: "300px" }} />
+          <button onClick={toggleMute} style={{ background: "none", border: "none", cursor: "pointer" }}>
+            {isMuted ? <MicOffRoundedIcon id="mic" /> : <MicRoundedIcon id="mic" />}
+          </button>
 
-      {inCall && (
-        <button onClick={endCall} style={{ background: "red", color: "white" }}>
-          End Call
-        </button>
-      )}
-      <Chatting  roomId={roomId}/>
+          <button onClick={toggleVideo} style={{ background: "none", border: "none", cursor: "pointer" }}>
+            {videoOff ? <VideocamOffRoundedIcon id="video" /> : <VideocamRoundedIcon id="video" />}
+          </button>
+        </div>
+      </div>
     </>
   );
 };

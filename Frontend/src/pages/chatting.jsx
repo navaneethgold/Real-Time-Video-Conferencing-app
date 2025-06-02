@@ -2,7 +2,7 @@ import { useState,useEffect,useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-
+import "../Styles/chatting.css";
 const Chatting=({roomId})=>{
     const navigate=useNavigate();
     const [message,setMessage]=useState('');
@@ -76,14 +76,12 @@ const Chatting=({roomId})=>{
 
 
     return(
-        <>
+        <div id="chat">
             <form onSubmit={handleSubmit}>
-                <div className="messageBox">
-                    <input type="text" value={message} onChange={handleChangeMessage} required/>
-                </div>
+                <input type="text" value={message} onChange={handleChangeMessage} required/>
                 <button type="submit">Send</button>
             </form>
-        </>
+        </div>
     )
 }
 export default Chatting;

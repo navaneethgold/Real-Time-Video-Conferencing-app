@@ -46,6 +46,10 @@ const Messaging=(server)=>{
         socket.to(roomId).emit("call-user", { offer });
       });
       
+      socket.on("videoOff",({roomId,videoOff})=>{
+        socket.to(roomId).emit("videoOff",{roomId,videoOff});
+      })
+
       socket.on("call-accepted", ({ roomId, answer }) => {
         socket.to(roomId).emit("call-accepted", { answer });
       });
