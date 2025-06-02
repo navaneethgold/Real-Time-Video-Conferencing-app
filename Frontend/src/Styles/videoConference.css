@@ -1,69 +1,194 @@
-body,html{
-    margin: 0;
-    padding: 0;
+body, html {
+  margin: 0;
+  padding: 0;
+  background: radial-gradient(circle at center, #001f1f 0%, #000000 100%);
+  font-family: 'Segoe UI', sans-serif;
 }
-video:first-of-type{
-    width: 230px;
-    object-fit: fill;
-    height: 150px;
-    position: fixed;
-    bottom: 3vh;
-    right: 3vh;
-    border-radius: 20px;
-    z-index: 1000;
+
+/* Remote Video */
+video:nth-of-type(2) {
+  width: 80vw;
+  height: 80vh;
+  object-fit: cover;
+  position: fixed;
+  left: 10vw;
+  bottom: 12vh;
+  border-radius: 20px;
+  z-index: 1;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
 }
-video:nth-of-type(2){
-    width: 80vw;
-    height: 80vh;
-    object-fit: fill;
-    position: fixed;
-    left: 10vw;
-    bottom:12vh ;
-    border-radius: 20px;
+
+/* Local Video (Bottom Right Corner) */
+video:first-of-type {
+  width: 230px;
+  height: 150px;
+  object-fit: cover;
+  position: fixed;
+  bottom: 3vh;
+  right: 3vh;
+  border-radius: 16px;
+  z-index: 10;
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
 }
-.video-overlay{
-    width: 230px;
-    /* object-fit: fill; */
-    background: radial-gradient(circle at bottom right, #a855f7 0%, #4f046f 50%, #0f001f 100%);
-    height: 150px;
-    position: fixed;
-    bottom: 3vh;
-    right: 3vh;
-    border-radius: 20px;
-    z-index: 10000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: xx-large;
+
+/* Overlay for "Video Off" */
+.video-overlay, .video-overlay2 {
+  background: radial-gradient(circle at center, #2f4f4f 0%, #001f1f 80%, #000000 100%);
+  color: #ffffffcc;
+  font-size: 1.8rem;
+  font-weight: 500;
+  text-shadow: 0 0 10px #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  border-radius: 20px;
 }
-.video-overlay2{
-    width: 80vw;
-    background: radial-gradient(circle at bottom right, #a855f7 0%, #4f046f 50%, #0f001f 100%);
-    height: 80vh;
-    object-fit: fill;
-    position: fixed;
-    left: 10vw;
-    bottom:12vh ;
-    border-radius: 20px;
-    z-index: 10000;
+
+.video-overlay {
+  width: 230px;
+  height: 150px;
+  bottom: 3vh;
+  right: 3vh;
+  z-index: 20;
 }
-#mic,#video{
-    color: white;
-    font-size: xx-large;
+
+.video-overlay2 {
+  width: 80vw;
+  height: 80vh;
+  left: 10vw;
+  bottom: 12vh;
+  z-index: 8;
 }
-.buttons{
-    position: fixed;
-    bottom: 3vh;
-    left: 35vw;
-    width: 30vw;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    align-items: center;
+
+/* Button Area */
+.buttons {
+  position: fixed;
+  bottom: 3vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+/* Buttons */
+.icon-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+#mic, #video {
+  font-size: 1.6rem;
+}
+
+/* End Call Button */
+.end-call-btn {
+  background: #ff3b3b;
+  border: none;
+  padding: 12px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.end-call-btn:hover {
+  background: #e60000;
+  transform: scale(1.1);
 }
 .lobby{
     width: 100vw;
     height: 100vh;
-    background-color: black;
+    /* background-color: black; */
+    /* background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); */
+    background: radial-gradient(circle at center, #012121 0%, #000000 80%);
+
+}
+
+#joinroom {
+  position: fixed;
+  top: 25vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  border-radius: 16px;
+  background: radial-gradient(circle at center, #2f4f4f 0%, #013939 80%, #1e1e1e 100%);
+  z-index: 1000;
+  color: white;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.jr {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+#joinroom input {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+}
+
+#joinroom button {
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #00bfa6;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#joinroom button:hover {
+  background-color: #009e8c;
+}
+
+#joinroom h1 {
+  margin: 1rem 0;
+  font-size: 1.25rem;
+  color: #ffffffcc;
+}
+
+.start-ins {
+  width: 100%;
+  height: 2.5rem;
+  margin: 1rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #00bfa6;
+  color: #00bfa6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: large;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.start-ins:hover {
+  background-color: rgba(0, 191, 166, 0.2);
 }

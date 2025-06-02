@@ -7,6 +7,7 @@ import MicRoundedIcon from '@mui/icons-material/MicRounded';
 import Chatting from "./chatting";
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
 import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
+import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 
 
@@ -137,6 +138,16 @@ const MeetVideo = () => {
     };
   }, [isReady, userData._id, roomId]);
 
+  function generateRoomId(length = 8) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for(let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    console.log("result: ",result);
+    setRoomId(result);
+    socketRef.current.emit("join-room", { roomId:result });
+  }
   const handleJoinRoom = (e) => {
     e.preventDefault();
     if (!roomId.trim()) return alert("Enter a room ID");
@@ -200,30 +211,32 @@ const MeetVideo = () => {
   return (
     <>
     <div className="lobby">
-        <form onSubmit={handleJoinRoom}>
-          <input type="text" placeholder="Enter Room ID" value={roomId} onChange={(e) => setRoomId(e.target.value)} required />
-          <button type="submit">Join Room</button>
-        </form>
+      {!inCall && 
+        <form onSubmit={handleJoinRoom} id="joinroom">
+          <div className="jr">
+              <input type="text" placeholder="Enter Room ID" value={roomId} onChange={(e) => setRoomId(e.target.value)} required />
+              <button type="submit">Join Room</button>
+          </div>
+          <div className="start-ins" onClick={() => generateRoomId()}>Generate a RoomID</div>
+        </form>}
         {videoOff && <div className="video-overlay">Video Off</div>}
-        <video ref={localVideoRef} autoPlay playsInline muted id="local"/>
+        <video ref={localVideoRef} autoPlay playsInline muted id="local" />
         {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
-        <video ref={remoteVideoRef} autoPlay playsInline id="remote"/>
-        {/* {inCall && (
-          <button onClick={endCall} style={{ background: "red", color: "white" }}>
-            End Call
-          </button>
-        )} */}
-        <div className="buttons">
-          <Chatting roomId={roomId} />
+        <video ref={remoteVideoRef} autoPlay playsInline id="remote" />
 
-          <button onClick={toggleMute} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            {isMuted ? <MicOffRoundedIcon id="mic" /> : <MicRoundedIcon id="mic" />}
-          </button>
-
-          <button onClick={toggleVideo} style={{ background: "none", border: "none", cursor: "pointer" }}>
-            {videoOff ? <VideocamOffRoundedIcon id="video" /> : <VideocamRoundedIcon id="video" />}
-          </button>
-        </div>
+        {inCall && (
+          <div className="buttons">
+            <button onClick={toggleMute} className="icon-btn">
+              {isMuted ? <MicOffRoundedIcon /> : <MicRoundedIcon />}
+            </button>
+            <button onClick={toggleVideo} className="icon-btn">
+              {videoOff ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
+            </button>
+            <button onClick={endCall} className="end-call-btn">
+              <CallEndRoundedIcon />
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
