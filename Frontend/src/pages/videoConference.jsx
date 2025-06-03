@@ -26,7 +26,6 @@ const MeetVideo = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [videoOff, setVideoOff] = useState(false);
   const localStreamRef = useRef(null);
-  const [ischatOpen,setIsChatOpen]=useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -232,9 +231,6 @@ const MeetVideo = () => {
             </button>
             <button onClick={toggleVideo} className="icon-btn">
               {videoOff ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
-            </button>
-            <button className="icon-btn">
-              <ChatRoundedIcon onClick={() => setIsChatOpen(prev => !prev)}/> 
             </button>
             <button onClick={endCall} className="end-call-btn">
               <CallEndRoundedIcon />

@@ -63,7 +63,7 @@ app.post("/signup",async(req,res)=>{
     const usern=await user.findOne({username:username});
     let new_user="";
     if(usern){
-        return res.status(400).send("username already exists");
+        return res.json({err:"user already exists"});
     }else{
         new_user=new user({username:username});
     }
