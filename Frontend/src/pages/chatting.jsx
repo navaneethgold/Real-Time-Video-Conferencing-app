@@ -2,12 +2,15 @@ import { useState,useEffect,useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import "../Styles/chatting.css";
+import { blue } from "@mui/material/colors";
 const Chatting=({roomId})=>{
     const navigate=useNavigate();
     const [message,setMessage]=useState('');
     const socketRef2 = useRef(null);
     const [userData, setUserData] = useState({});
+    const [messages, setMessages] = useState([]);
 
 
     useEffect(() => {
@@ -33,23 +36,22 @@ const Chatting=({roomId})=>{
         setMessage(e.target.value);
     }
 
-    const handleSubmit=async(e)=>{
-        e.preventDefault(); // important
-        console.log("submit clicked");
-        if (!socketRef2.current) {
-          console.error("Socket is not connected yet.");
-          return;
-        }
+    const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!socketRef2.current || message.trim() === '') return;
 
-      try {
-        console.log("submit clicked");
-        socketRef2.current.emit("private-message", { roomId, message });
-        setMessage(""); // clear input
-        
-      } catch (err) {
-        console.error("Failed to send message", err);
-      }
-    }
+    const newMessage = {
+      from: userData.username,
+      text: message,
+      isOwn: true
+    };
+    const un=userData.username;
+    // Emit and update UI
+    socketRef2.current.emit("private-message", { roomId, message,un });
+    setMessage("");
+    // setMessages((prev) => [...prev, newMessage]);
+    // setMessage("");
+  };
     useEffect(() => {
       if (userData._id && !socketRef2.current && roomId) {
         socketRef2.current = io("http://localhost:8000", {
@@ -59,8 +61,13 @@ const Chatting=({roomId})=>{
     
         socketRef2.current.emit("join-room-2", {roomId});
 
-        socketRef2.current.on("private-message", ({ roomId, message }) => {
-          console.log("Message from", roomId, ":", message);
+        socketRef2.current.on("private-message", ({ roomId, message, un }) => {
+          const newMsg = {
+            from: un || 'Anonymous',
+            text: message,
+            isOwn: false
+          };
+          setMessages((prev) => [...prev, newMsg]);
         });
       } 
     
@@ -77,10 +84,25 @@ const Chatting=({roomId})=>{
 
     return(
         <div id="chat">
+          <div className="inside">
+            <h2 style={{color:"white"}}>Chat</h2>
+            <div className="chat-messages">
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                >
+                  <span className="sender">{msg.from}:</span> <span id="txt1">{msg.text}</span>
+                </div>
+              ))}
+            </div>
             <form onSubmit={handleSubmit}>
-                <input type="text" value={message} onChange={handleChangeMessage} required/>
-                <button type="submit">Send</button>
+              <div className="vals">
+                <input type="text" value={message} onChange={handleChangeMessage} placeholder="Type a Message" required/>
+                <button type="submit" className="send"><SendRoundedIcon style={{color:'#77f7d9'}}/></button>
+              </div>
             </form>
+          </div>
+            
         </div>
     )
 }

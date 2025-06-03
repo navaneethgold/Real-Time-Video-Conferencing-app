@@ -1,40 +1,65 @@
-import { useState,useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "../Styles/login.css";
 
-const Login=()=>{
-    const[formData,setformData]=useState({
-        username:"",
-        password:""
-    })
-    const handleChange=(e)=>{
-        setformData(prev=>({
-            ...prev,
-            [e.target.name]:e.target.value
-        }))
-    }
-    const handleSubmit=async(e)=>{
-        e.preventDefault();
-        try{
-            console.log(formData.username);
-            const res=await axios.post("http://localhost:8000/login",formData,{
-                withCredentials:true
-            });
-            console.log(res.data.username);
-            alert("Login successful");
+const Login = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    password: ""
+  });
 
-        }catch(error){
-            console.log(error);
-            alert("Login failed");
-        }
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("http://localhost:8000/login", formData, {
+        withCredentials: true
+      });
+      console.log("Logged in as:", res.data.username);
+      alert("Login successful");
+      navigate("/videoConference"); // redirect after login if needed
+    } catch (error) {
+      console.log(error);
+      alert("Login failed");
     }
-    return(
-        <form onSubmit={handleSubmit}>
-            <div className="login">
-                <input type="text" name="username" value={formData.username} onChange={handleChange}/>
-                <input type="password" name="password" value={formData.password} onChange={handleChange} />
-            </div>
-            <button type="submit">Login</button>
-        </form>
-    )
-}
+  };
+
+  return (
+    <div className="login-container">
+      <form onSubmit={handleSubmit} className="login-card">
+        <h2 className="login-title">Welcome Back 👋</h2>
+        <input
+          type="text"
+          name="username"
+          value={formData.username}
+          onChange={handleChange}
+          placeholder="Username"
+          className="login-input"
+        />
+        <input
+          type="password"
+          name="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="Password"
+          className="login-input"
+        />
+        <button type="submit" className="login-button">Login</button>
+        <p className="signup-text">
+          Don't have an account? <span onClick={() => navigate("/signup")} className="signup-link">Sign up</span>
+        </p>
+      </form>
+    </div>
+  );
+};
+
 export default Login;

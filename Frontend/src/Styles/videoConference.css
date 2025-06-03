@@ -11,7 +11,7 @@ video:nth-of-type(2) {
   height: 80vh;
   object-fit: cover;
   position: fixed;
-  left: 10vw;
+  left: 1vw;
   bottom: 12vh;
   border-radius: 20px;
   z-index: 1;
@@ -20,12 +20,13 @@ video:nth-of-type(2) {
 
 /* Local Video (Bottom Right Corner) */
 video:first-of-type {
-  width: 230px;
+  width: 18vw;
   height: 150px;
   object-fit: cover;
   position: fixed;
-  bottom: 3vh;
-  right: 3vh;
+  bottom: 11vh;
+  right: 0;
+  margin:0.5vw;
   border-radius: 16px;
   z-index: 10;
   box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
@@ -46,17 +47,18 @@ video:first-of-type {
 }
 
 .video-overlay {
-  width: 230px;
+  width: 18vw;
   height: 150px;
-  bottom: 3vh;
-  right: 3vh;
+  bottom: 11vh;
+  right: 0;
+  margin:0.5vw;
   z-index: 20;
 }
 
 .video-overlay2 {
   width: 80vw;
   height: 80vh;
-  left: 10vw;
+  left: 1vw;
   bottom: 12vh;
   z-index: 8;
 }

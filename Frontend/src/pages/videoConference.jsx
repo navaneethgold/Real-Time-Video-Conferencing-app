@@ -8,6 +8,7 @@ import Chatting from "./chatting";
 import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
 import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
 import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
+import ChatRoundedIcon from '@mui/icons-material/ChatRounded';
 import MicOffRoundedIcon from '@mui/icons-material/MicOffRounded';
 
 
@@ -25,7 +26,7 @@ const MeetVideo = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [videoOff, setVideoOff] = useState(false);
   const localStreamRef = useRef(null);
-
+  const [ischatOpen,setIsChatOpen]=useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -206,7 +207,7 @@ const MeetVideo = () => {
       socketRef.current.emit("videoOff",{roomId,videoOff});
     }
   };
-
+  
 
   return (
     <>
@@ -223,7 +224,7 @@ const MeetVideo = () => {
         <video ref={localVideoRef} autoPlay playsInline muted id="local" />
         {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
         <video ref={remoteVideoRef} autoPlay playsInline id="remote" />
-
+        <Chatting roomId={roomId}/>
         {inCall && (
           <div className="buttons">
             <button onClick={toggleMute} className="icon-btn">
@@ -231,6 +232,9 @@ const MeetVideo = () => {
             </button>
             <button onClick={toggleVideo} className="icon-btn">
               {videoOff ? <VideocamOffRoundedIcon /> : <VideocamRoundedIcon />}
+            </button>
+            <button className="icon-btn">
+              <ChatRoundedIcon onClick={() => setIsChatOpen(prev => !prev)}/> 
             </button>
             <button onClick={endCall} className="end-call-btn">
               <CallEndRoundedIcon />

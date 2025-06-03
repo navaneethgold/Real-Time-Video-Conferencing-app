@@ -33,12 +33,13 @@ const Messaging=(server)=>{
         socket.join(roomId);
       });
       
-      socket.on("private-message", async ({ roomId, message }) => {
+      socket.on("private-message", async ({ roomId, message,un }) => {
         // const receiverSocketId = onlineUsers.get(to);
         // if (receiverSocketId) {
           io.to(roomId).emit("private-message", {
             roomId,
             message,
+            un,
           });
         // }
       });
