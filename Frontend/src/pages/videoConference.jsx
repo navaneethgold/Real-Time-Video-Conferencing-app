@@ -201,7 +201,7 @@ const MeetVideo = () => {
     });
   };
 
-  const endCallForMe = () => {
+  const endCallForMe = async() => {
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
@@ -217,6 +217,11 @@ const MeetVideo = () => {
     }
 
     setInCall(false);
+    socketRef.current.emit("end-call", { roomId });
+    setInCall(false);
+    await axios.put("http://localhost:8000/endMeeting",{roomId:roomId},{
+      withCredentials:true,
+    });
   };
   const toggleMute = () => {
     const audioTrack = localStreamRef.current?.getAudioTracks()[0];

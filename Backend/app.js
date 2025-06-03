@@ -127,18 +127,42 @@ app.post("/newMeeting",async(req,res)=>{
 
 app.put("/endMeeting", async (req, res) => {
   try {
-    const exist = await meeting.findOne({ roomId: req.body.roomId });
+    const exist = await meeting.find({ roomId: req.body.roomId });
 
-    if (!exist) {
+    if (exist.length === 0) {
       return res.status(404).json({ err: "Meeting not found" });
     }
-
-    exist.endTime = Date.now();
-    await exist.save();
+    
+    for (const e of exist) {
+      e.endTime = Date.now();  // Call it as a function
+      await e.save();
+    }
 
     res.status(200).json({ message: "Meeting ended successfully" });
   } catch (err) {
     console.log("error", err);
+    res.status(500).json({ err: "Internal server error" });
+  }
+});
+
+app.get("/fetchHistory", async (req, res) => {
+  try {
+    // Step 1: Get all meetings created by this user, sorted by roomId
+    const allHistory = await meeting.find({ generatedBy: req.user.username })
+      .sort({ StartTim: -1 });
+
+    // Step 2: Extract roomIds from those meetings
+    const roomIds = allHistory.map(meet => meet.roomId);
+
+    // Step 3: Get related meetings with same roomIds, but from other users, sorted by roomId
+    const relatedMeetings = await meeting.find({ 
+      roomId: { $in: roomIds },
+      generatedBy: { $ne: req.user.username }
+    }).sort({ StartTim: -1 });
+
+    res.json({ yourMeetings: allHistory, othersInSameRooms: relatedMeetings });
+  } catch (err) {
+    console.error("Error fetching history:", err);
     res.status(500).json({ err: "Internal server error" });
   }
 });

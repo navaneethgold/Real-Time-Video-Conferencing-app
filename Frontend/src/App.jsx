@@ -8,7 +8,6 @@ import Home from './pages/home';
 import Login from './pages/login';
 import Chatting from './pages/chatting';
 import MeetVideo from './pages/videoConference';
-import TopBar from './boilerPlate/topBar';
 import History from './pages/history';
 function App() {
   return (
