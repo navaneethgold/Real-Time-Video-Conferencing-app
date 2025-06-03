@@ -110,6 +110,38 @@ app.get("/getID/:username",async(req,res)=>{
     }
 })
 
+app.post("/newMeeting",async(req,res)=>{
+    try{
+        let meeting1=await meeting.findOne({roomId:req.body.roomId,endTime:{$ne:null}});
+        if(meeting1) return res.json({err:"Meeting Id already used"})
+        let newMeet=new meeting({
+            generatedBy:req.body.generatedBy,
+            roomId:req.body.roomId
+        });
+        await newMeet.save();
+        return res.json({ message: "Meeting created successfully" });
+    }catch(err){
+        console.log("error",err);
+    }
+})
+
+app.put("/endMeeting", async (req, res) => {
+  try {
+    const exist = await meeting.findOne({ roomId: req.body.roomId });
+
+    if (!exist) {
+      return res.status(404).json({ err: "Meeting not found" });
+    }
+
+    exist.endTime = Date.now();
+    await exist.save();
+
+    res.status(200).json({ message: "Meeting ended successfully" });
+  } catch (err) {
+    console.log("error", err);
+    res.status(500).json({ err: "Internal server error" });
+  }
+});
 
 app.get("/home",(req,res)=>{
     return res.send("Hello world");

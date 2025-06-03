@@ -148,13 +148,38 @@ const MeetVideo = () => {
     setRoomId(result);
     socketRef.current.emit("join-room", { roomId:result });
   }
-  const handleJoinRoom = (e) => {
+  const handleJoinRoom = async (e) => {
     e.preventDefault();
-    if (!roomId.trim()) return alert("Enter a room ID");
-    socketRef.current.emit("join-room", { roomId });
+
+    if (!roomId.trim()) {
+      return alert("Enter a room ID");
+    }
+
+    const meet = {
+      generatedBy: userData.username,
+      roomId: roomId
+    };
+
+    try {
+      const res = await axios.post("http://localhost:8000/newMeeting", meet, {
+        withCredentials: true,
+      });
+      console.log(inCall);
+      if (res?.data?.err) {
+        alert(res.data.err); // e.g., room already exists or user unauthorized
+        return;
+      }
+      // If meeting creation succeeded
+      socketRef.current.emit("join-room", { roomId });
+      setInCall(true);
+
+    } catch (error) {
+      console.error("Failed to create or join meeting:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
-  const endCall = () => {
+  const endCall = async() => {
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
@@ -171,6 +196,9 @@ const MeetVideo = () => {
 
     socketRef.current.emit("end-call", { roomId });
     setInCall(false);
+    await axios.put("http://localhost:8000/endMeeting",{roomId:roomId},{
+      withCredentials:true,
+    });
   };
 
   const endCallForMe = () => {
@@ -223,7 +251,7 @@ const MeetVideo = () => {
         <video ref={localVideoRef} autoPlay playsInline muted id="local" />
         {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
         <video ref={remoteVideoRef} autoPlay playsInline id="remote" />
-        <Chatting roomId={roomId}/>
+        {inCall && <Chatting roomId={roomId}/>}
         {inCall && (
           <div className="buttons">
             <button onClick={toggleMute} className="icon-btn">

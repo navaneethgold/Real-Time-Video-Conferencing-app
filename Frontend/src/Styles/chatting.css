@@ -10,6 +10,7 @@
     background: radial-gradient(circle at center, #2f4f4f 0%, #001f1f 80%, #000000 100%);
     border-radius: 20px;
     overflow: hidden;
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.2);
 }
 .inside{
     width: 100%;
