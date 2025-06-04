@@ -3,7 +3,7 @@ import { Socket,Server } from "socket.io"
 const Messaging=(server)=>{
     const io=new Server(server,{
         cors:{
-            origin:"https://real-time-video-conferencing-app.vercel.app/home",
+            origin:"https://real-time-video-conferencing-app.vercel.app",
             methods:["GET","POST"],
             allowedHeaders:["*"],
             credentials:true
