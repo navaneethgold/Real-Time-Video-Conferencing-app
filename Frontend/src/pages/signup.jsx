@@ -43,6 +43,7 @@ const Signup = () => {
 
       alert("Sign up successful!");
       setError(""); // Clear any previous error
+      navigate("/home");
       // optionally navigate to login page
     } catch (error) {
       console.error(error);

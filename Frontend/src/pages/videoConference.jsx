@@ -243,6 +243,10 @@ const MeetVideo = () => {
   };
   const logout = async () => {
     try {
+      if (localVideoRef.current?.srcObject) {
+        localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        localVideoRef.current.srcObject = null;
+      }
       await axios.post("http://localhost:8000/logout", {}, {
         withCredentials: true,
       });
@@ -252,20 +256,34 @@ const MeetVideo = () => {
       console.log("Logout error", err);
     }
   };
-  
+
+  const home=()=>{
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      localVideoRef.current.srcObject = null;
+    }
+    navigate("/home");
+  }
+  const history=()=>{
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      localVideoRef.current.srcObject = null;
+    }
+    navigate("/history");
+  }
 
   return (
     <>
     <div className="lobby">
       {!inCall &&
         <div className="topbar">
-            <div className="icon" onClick={()=>navigate("/home")}>
+            <div className="icon" onClick={home}>
               <img src="op1.png" alt="icon" />
               <h3>Welcome to lucid Talk</h3>
             </div>
             
-              <div className="controls" onClick={() => navigate("/home")}>Home</div>
-              <div className="controls" onClick={() => navigate("/history")}>History</div>
+              <div className="controls" onClick={home}>Home</div>
+              <div className="controls" onClick={history}>History</div>
               <div className="controls" onClick={logout}>LogOut</div>
           </div>
       }
@@ -278,7 +296,7 @@ const MeetVideo = () => {
           <div className="start-ins" onClick={() => generateRoomId()}>Generate a RoomID</div>
         </form>}
         {videoOff && <div className="video-overlay">Video Off</div>}
-        <video ref={localVideoRef} autoPlay playsInline muted id="local" />
+        {isLogged && <video ref={localVideoRef} autoPlay playsInline muted id="local" />}
         {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
         {inCall && <video ref={remoteVideoRef} autoPlay playsInline id="remote" />}
         {inCall && <Chatting roomId={roomId}/>}

@@ -34,12 +34,12 @@ const History=()=>{
                         withCredentials:true,
                     });
                     const combined=res.data.yourMeetings.map((meet)=>{
-                        const otherOne=res.data.othersInSameRooms.find((match)=>
+                        let otherOne=res.data.othersInSameRooms.find((match)=>
                             match.roomId===meet.roomId
                         );
                         return{
                             user:meet.generatedBy,
-                            otherUser:otherOne.generatedBy,
+                            otherUser:!otherOne ? "-":otherOne.generatedBy,
                             roomId:meet.roomId,
                             startTime: new Date(meet.StartTime).toLocaleString(),
                             endTime: meet.endTime
