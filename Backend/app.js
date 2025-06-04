@@ -184,9 +184,9 @@ app.post('/logout', (req, res) => {
   });
 });
 
-app.get("/home",(req,res)=>{
-    return res.send("Hello world");
-})
+app.get("/ping", (req, res) => {
+  res.send("Backend is alive!");
+});
 server.listen("8000",()=>{
     console.log("server is running on port 8000");
 })
