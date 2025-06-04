@@ -33,8 +33,8 @@ const sessionOptions = {
 };
 const allowedOrigins=[
     "http://localhost:5173",
-    "https://Lucid-Talk.onrender.com",
-    "https://Lucid-Talk.vercel.app"
+    "https://real-time-video-conferencing-app.onrender.com",
+    "https://real-time-video-conferencing-app.vercel.app"
 ];
 app.use(cors({
     origin: (origin, callback) => {
