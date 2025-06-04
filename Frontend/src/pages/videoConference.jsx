@@ -26,6 +26,7 @@ const MeetVideo = () => {
   const [isMuted, setIsMuted] = useState(false);
   const [videoOff, setVideoOff] = useState(false);
   const localStreamRef = useRef(null);
+  const [isLogged,setistLogged]=useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -36,6 +37,7 @@ const MeetVideo = () => {
         if (res.data.isAuthenticated) {
           setUserData(res.data.user);
           setIsReady(true);
+          setistLogged(true);
         } else {
           navigate("/login");
         }
@@ -239,11 +241,34 @@ const MeetVideo = () => {
       socketRef.current.emit("videoOff",{roomId,videoOff});
     }
   };
+  const logout = async () => {
+    try {
+      await axios.post("http://localhost:8000/logout", {}, {
+        withCredentials: true,
+      });
+      setistLogged(false); // 🔥 update state to re-render
+      navigate("/login")
+    } catch (err) {
+      console.log("Logout error", err);
+    }
+  };
   
 
   return (
     <>
     <div className="lobby">
+      {!inCall &&
+        <div className="topbar">
+            <div className="icon" onClick={()=>navigate("/home")}>
+              <img src="op1.png" alt="icon" />
+              <h3>Welcome to lucid Talk</h3>
+            </div>
+            
+              <div className="controls" onClick={() => navigate("/home")}>Home</div>
+              <div className="controls" onClick={() => navigate("/history")}>History</div>
+              <div className="controls" onClick={logout}>LogOut</div>
+          </div>
+      }
       {!inCall && 
         <form onSubmit={handleJoinRoom} id="joinroom">
           <div className="jr">
@@ -255,7 +280,7 @@ const MeetVideo = () => {
         {videoOff && <div className="video-overlay">Video Off</div>}
         <video ref={localVideoRef} autoPlay playsInline muted id="local" />
         {isRemoteVideoOff && <div className="video-overlay2">Video Off</div>}
-        <video ref={remoteVideoRef} autoPlay playsInline id="remote" />
+        {inCall && <video ref={remoteVideoRef} autoPlay playsInline id="remote" />}
         {inCall && <Chatting roomId={roomId}/>}
         {inCall && (
           <div className="buttons">

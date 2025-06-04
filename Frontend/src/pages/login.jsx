@@ -26,7 +26,7 @@ const Login = () => {
       });
       console.log("Logged in as:", res.data.username);
       alert("Login successful");
-      navigate("/videoConference"); // redirect after login if needed
+      navigate("/home"); // redirect after login if needed
     } catch (error) {
       console.log(error);
       alert("Login failed");

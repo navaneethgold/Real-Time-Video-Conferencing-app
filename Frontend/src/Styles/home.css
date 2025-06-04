@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(to bottom right, #001f1f, #001010);
+  color: white;
+}
+
+.home-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: rgba(0, 22, 22, 0.8);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  backdrop-filter: blur(10px);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.4);
+  animation: slideIn 1s ease;
+}
+
+.sidebar .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+  color: #00e6e6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.logo img{
+    width: 5vw;
+    margin: 1rem;
+}
+
+.sidebar button {
+  background-color: #003333;
+  color: white;
+  border: none;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  font-size: medium;
+  /* font-weight: bold; */
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.sidebar button:hover {
+  background-color: #00cccc;
+  transform: scale(1.05);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.welcome-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+  animation: fadeIn 1s ease-in-out;
+}
+
+.welcome-box h1,
+.welcome-box h2 {
+  margin: 0;
+  font-size: 2rem;
+  text-align: center;
+  color: #c2f0f0;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
