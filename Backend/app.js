@@ -27,7 +27,7 @@ const sessionOptions = {
     httpOnly: true,
     sameSite: "none",
     secure: true, // safer for local testing
-    domain: "Lucid-Talk.onrender.com", // ✅ backend domain
+    domain: "real-time-video-conferencing-app.onrender.com", // ✅ backend domain
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
 };
