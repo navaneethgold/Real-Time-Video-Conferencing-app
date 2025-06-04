@@ -16,7 +16,7 @@ const Chatting=({roomId})=>{
     useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/check-Auth", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/check-Auth`, {
           withCredentials: true,
         });
         if (res.data.isAuthenticated) {
@@ -54,7 +54,7 @@ const Chatting=({roomId})=>{
   };
     useEffect(() => {
       if (userData._id && !socketRef2.current && roomId) {
-        socketRef2.current = io("http://localhost:8000", {
+        socketRef2.current = io( `${import.meta.env.VITE_API_BASE_URL}`, {
           auth:{userId:userData._id},
           withCredentials: true
         });

@@ -31,7 +31,7 @@ const MeetVideo = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/check-Auth", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/check-Auth`, {
           withCredentials: true,
         });
         if (res.data.isAuthenticated) {
@@ -52,7 +52,7 @@ const MeetVideo = () => {
   useEffect(() => {
     if (!isReady || !userData._id || !localVideoRef.current) return;
 
-    socketRef.current = io("http://localhost:8000", {
+    socketRef.current = io(`${import.meta.env.VITE_API_BASE_URL}`, {
       auth: { userId: userData._id },
       withCredentials: true,
     });
@@ -163,7 +163,7 @@ const MeetVideo = () => {
     };
 
     try {
-      const res = await axios.post("http://localhost:8000/newMeeting", meet, {
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/newMeeting`, meet, {
         withCredentials: true,
       });
       console.log(inCall);
@@ -198,7 +198,7 @@ const MeetVideo = () => {
 
     socketRef.current.emit("end-call", { roomId });
     setInCall(false);
-    await axios.put("http://localhost:8000/endMeeting",{roomId:roomId},{
+    await axios.put(`${import.meta.env.VITE_API_BASE_URL}/endMeeting`,{roomId:roomId},{
       withCredentials:true,
     });
   };
@@ -221,7 +221,7 @@ const MeetVideo = () => {
     setInCall(false);
     socketRef.current.emit("end-call", { roomId });
     setInCall(false);
-    await axios.put("http://localhost:8000/endMeeting",{roomId:roomId},{
+    await axios.put(`${import.meta.env.VITE_API_BASE_URL}/endMeeting`,{roomId:roomId},{
       withCredentials:true,
     });
   };
@@ -247,7 +247,7 @@ const MeetVideo = () => {
         localVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
         localVideoRef.current.srcObject = null;
       }
-      await axios.post("http://localhost:8000/logout", {}, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/logout`, {}, {
         withCredentials: true,
       });
       setistLogged(false); // 🔥 update state to re-render

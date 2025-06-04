@@ -11,7 +11,7 @@ import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 import StopScreenShareIcon from '@mui/icons-material/StopScreenShare'
 import ChatIcon from '@mui/icons-material/Chat'
 
-const server_url="http://localhost:8000";
+const server_url=`${import.meta.env.VITE_API_BASE_URL}`;
 var connections={};
 const peerConfigConnections={
     "iceServers":[

@@ -7,25 +7,34 @@ import passport from 'passport';
 import localStrategy from 'passport-local';
 import session from 'express-session';
 import { error } from 'node:console';
+import dotenv from "dotenv";
 import user from './models/user.js';
 import meeting from "./models/meeting.js";
 import msg from "./models/message.js";
 import Messaging from './controllers/messageSocket.js';
+dotenv.config();
 const app=express();
 const server=createServer(app);
 Messaging(server);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-const sessionOptions={
-    secret: "navaneeth1729",
-    resave:false,
-    saveUninitialized:false,
-    cookie:{
-        maxAge:7*24*60*60*1000,
-    },
+app.set("trust proxy", 1);
+const sessionOptions = {
+  secret: process.env.SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: "none",
+    secure: true, // safer for local testing
+    domain: "Lucid-Talk.onrender.com", // ✅ backend domain
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  },
 };
 const allowedOrigins=[
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "https://Lucid-Talk.onrender.com",
+    "https://Lucid-Talk.vercel.app"
 ];
 app.use(cors({
     origin: (origin, callback) => {
@@ -45,7 +54,7 @@ passport.use(new localStrategy(user.authenticate()));
 passport.serializeUser(user.serializeUser());
 passport.deserializeUser(user.deserializeUser());
 
-const dburl='mongodb+srv://navaneethabs2006:V9s22ZUtesUBf7xi@cluster0.wj001x8.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const dburl=process.env.MONGO_URI;
 
 main().then(()=>{
     console.log("Connected-Successfully");

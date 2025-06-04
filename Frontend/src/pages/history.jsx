@@ -12,7 +12,7 @@ const History=()=>{
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/check-Auth", {
+        const res = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/check-Auth`, {
           withCredentials: true,
         });
         if (res.data.isAuthenticated) {
@@ -30,7 +30,7 @@ const History=()=>{
         const fetchHistory=async()=>{
             try{
                 if(isLogged){
-                    const res= await axios.get("http://localhost:8000/fetchHistory",{
+                    const res= await axios.get(`${import.meta.env.VITE_API_BASE_URL}/fetchHistory`,{
                         withCredentials:true,
                     });
                     const combined=res.data.yourMeetings.map((meet)=>{
@@ -59,7 +59,7 @@ const History=()=>{
     
     const logout = async () => {
     try {
-      await axios.post("http://localhost:8000/logout", {}, {
+      await axios.post(`${import.meta.env.VITE_API_BASE_URL}/logout`, {}, {
         withCredentials: true,
       });
       setisLogged(false); // 🔥 update state to re-render
