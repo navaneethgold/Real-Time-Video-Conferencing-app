@@ -167,6 +167,14 @@ app.get("/fetchHistory", async (req, res) => {
   }
 });
 
+app.post('/logout', (req, res) => {
+  req.logout(function(err) {
+    if (err) return res.status(500).json({ error: "Logout failed" });
+    res.clearCookie("connect.sid"); // Optional: clear session cookie
+    res.json({ message: "Logged out" });
+  });
+});
+
 app.get("/home",(req,res)=>{
     return res.send("Hello world");
 })

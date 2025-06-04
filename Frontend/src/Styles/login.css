@@ -14,9 +14,19 @@
   border-radius: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
   width: 90%;
-  max-width: 400px;
+  max-width: 520px;
   text-align: center;
   color: white;
+}
+.login-card h2{
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.login-card h2 img{
+  height: 9vh;
+  margin-right: 1rem;
 }
 
 .login-title {
@@ -78,4 +88,9 @@
 
 .signup-link:hover {
   text-decoration: underline;
+}
+h4{
+  text-align: center;
+  color: white;
+  font-weight: normal;
 }

@@ -13,7 +13,7 @@
   border-radius: 20px;
   display: flex;
   flex-direction: column;
-  width: 320px;
+  width: 450px;
   box-shadow: 0 0 20px rgba(119, 247, 217, 0.2);
 }
 
@@ -57,4 +57,15 @@
     color: white;
     padding: 10px;
     text-align: center;
+}
+
+.signup-form h2{
+  margin-bottom: 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.signup-form h2 img{
+  height: 9vh;
+  margin-right: 1rem;
 }

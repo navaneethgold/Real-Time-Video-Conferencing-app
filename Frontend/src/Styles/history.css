@@ -1,0 +1,56 @@
+.topbar {
+  height: 12vh;
+  width: 94vw;
+  padding: 0 3vw;
+  background: rgba(10, 25, 41, 0.85);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 12px;
+}
+
+.icon img {
+  height: 8vh;
+}
+
+.icon h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.tala span {
+  cursor: pointer;
+  color: #3498db;
+  font-weight: bold;
+}
+
+.tala span:hover {
+  color: #1d6fa5;
+  text-decoration: underline;
+}
+
+.controls {
+  margin-left: 20px;
+  padding: 8px 16px;
+  background-color: #2c3e50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.controls:hover {
+  background-color: #1a252f;
+}

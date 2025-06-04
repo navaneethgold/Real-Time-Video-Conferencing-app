@@ -36,7 +36,7 @@ const Login = () => {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-card">
-        <h2 className="login-title">Welcome Back 👋</h2>
+        <h2 className="login-title"><img src="op1.png" alt="icon" />Welcome Back to Lucid Talk👋</h2>
         <input
           type="text"
           name="username"

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
-
+import "../Styles/history.css";
 const History=()=>{
   const [userData, setUserData] = useState({});
   const navigate = useNavigate();
@@ -56,22 +56,38 @@ const History=()=>{
         }
         fetchHistory();
     },[isLogged]);
+    
+    const logout = async () => {
+    try {
+      await axios.post("http://localhost:8000/logout", {}, {
+        withCredentials: true,
+      });
+      setisLogged(false); // 🔥 update state to re-render
+      setUserData({});
+      setHistoryData([]); // optional: clear history too
+      // navigate("/"); // optional: redirect to home/login page
+    } catch (err) {
+      console.log("Logout error", err);
+    }
+  };
+
     return(
         <>
           <div className="topbar">
-            {!isLogged && (
-              <div className="islog">
-                <div className="log" onClick={() => navigate("/login")}>Login/</div>
-                <div className="su" onClick={() => navigate("/signup")}>SignUp</div>
-              </div>
-            )}
-            <div className="control">
+            <div className="icon" onClick={()=>navigate("/home")}>
+              <img src="op1.png" alt="icon" />
+              <h3>Welcome to lucid Talk</h3>
+            </div>
+            
               <div className="controls" onClick={() => navigate("/home")}>Home</div>
               <div className="controls" onClick={() => navigate("/videoConference")}>Start a new 1:1 Meeting</div>
-            </div>
+              {isLogged && <div className="controls" onClick={logout}>LogOut</div>}
+              {!isLogged && (
+                <div className="tala"><span onClick={() => navigate("/login")}>Login/</span><span onClick={() => navigate("/signup")}>SignUp</span></div>
+              )}
           </div>
 
-          <h2 style={{ textAlign: "center", marginTop: "20px" }}>Meeting History</h2>
+          <h2 style={{ textAlign: "center", marginTop: "20px",color:"white" }}>Meeting History</h2>
 
           <div style={{ padding: "20px" }}>
             <table style={{

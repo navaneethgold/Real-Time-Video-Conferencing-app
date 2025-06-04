@@ -1,8 +1,10 @@
 import { useState } from "react";
 import axios from 'axios';
 import "../Styles/signup.css";
+import { useNavigate } from "react-router-dom";
 
 const Signup = () => {
+  const navigate=useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -51,8 +53,7 @@ const Signup = () => {
   return (
     <div className="signup-container">
       <form onSubmit={handleSubmit} className="signup-form">
-        <h2>Create Account</h2>
-
+        <h2 className="login-title"><img src="op1.png" alt="icon" />Welcome to Lucid Talk👋</h2>
         <input
           type="text"
           name="username"
@@ -83,6 +84,7 @@ const Signup = () => {
         {error && <p className="error-message" style={{color:"white"}}>{error}</p>}
 
         <button type="submit">Register</button>
+        <h4>Already have an account? <span onClick={()=>navigate("/login")} className="signup-link">Login</span></h4>
       </form>
     </div>
   );
